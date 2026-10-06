@@ -31,7 +31,7 @@ public class Jugador : MonoBehaviour
 
     void Update()
     {
-        // El movimiento horizontal se bloquea si el personaje está en retroceso[cite: 13]
+        // El movimiento horizontal se bloquea si el personaje está en retroceso
         if (!enRetroceso)
         {
             movimiento = Input.GetAxisRaw("Horizontal");
@@ -56,17 +56,18 @@ public class Jugador : MonoBehaviour
     {
         if (collision.transform.CompareTag("abejita"))
         {
-            audioSource.PlayOneShot(audioAbeja); // Sonido al recolectar[cite: 13]
+            audioSource.PlayOneShot(audioAbeja); // Sonido al recolectar
             Destroy(collision.gameObject);
-            cantAbejas++;
-            textoAbejas.text = "" + cantAbejas;
+            
+            // Le avisamos al administrador que sume el punto en la pantalla:
+            GameManager.instance.RecolectarAbeja();
         }
         if (collision.transform.CompareTag("puerquito"))
         {
-            audioSource.PlayOneShot(audioPuerquito); // Sonido al morir[cite: 13]
+            audioSource.PlayOneShot(audioPuerquito); // Sonido al morir
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
-        if (collision.transform.CompareTag("caracol")) // Lógica completa del pisotón[cite: 13]
+        if (collision.transform.CompareTag("caracol")) // Lógica completa del pisotón
         {
             audioSource.PlayOneShot(audioCaracol);
             enRetroceso = true;
@@ -79,13 +80,15 @@ public class Jugador : MonoBehaviour
             foreach (Collider2D col in colliders)
                 col.enabled = false;
                 
-            collision.GetComponent<Animator>().enabled = true;
+            // Reproduce la animación de esconderse al pisarlo
+            collision.GetComponent<Animator>().Play("Caracol_Esconde");
+            
             Destroy(collision.gameObject, 0.4f);
             Invoke(nameof(QuitarRetroceso), 0.2f);
         }
     }
 
-    // Método para devolverle el control al jugador[cite: 13]
+    // Método para devolverle el control al jugador
     void QuitarRetroceso()
     {
         enRetroceso = false;
